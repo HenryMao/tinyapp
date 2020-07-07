@@ -19,6 +19,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${tempUrl}`);        // Respond with 'Ok' (we will replace this)
 });
 
+app.post("/urls/:shortURL/update", (req, res) => {
+  urlDatabase[req.params.shortURL] = req.body.updateLongUrl;
+  res.redirect("/urls");
+});
+
+
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
