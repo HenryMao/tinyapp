@@ -9,13 +9,16 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new" >Create New URL</a>
         <div class ="d-flex float-right align-items-center justify-content-center">
-        <% if(username === undefined){ %>
-          <form method="POST" action="/login">
-            <input name="username" placeholder="username"/>
-            <button type="submit">Sign in</button>
+        <% if(user === undefined){ %>
+          <a style="margin-right: 8px">Not logged in</a>
+          <form method="GET" action="/login">
+            <button type="submit">Log in</button>
+          </form>
+          <form method="get" action="/registration">
+            <button type="submit">Register</button>
           </form>
         <%} else{%>
-          <p class = "d-flex align-items-center">Logged in as <%= username %></p>
+          <a style="margin-right: 8px">Logged in as <%= user.email %></a>
           <form method="POST" action="/logout">
             <button type="submit">Sign out</button>
           </form>
