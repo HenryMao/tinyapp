@@ -72,9 +72,14 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:shortURL/update", (req, res) => {
-  urlDatabase[req.params.shortURL] = {longURL: req.body.updateLongUrl, userID: req.session.user_id};
+  if (logged) {
+    urlDatabase[req.params.shortURL] = {longURL: req.body.updateLongUrl, userID: req.session.user_id};
 
-  res.redirect("/urls");
+    res.redirect("/urls");
+  } else {
+    res.send(403);
+  }
+  
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -89,7 +94,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/registration/register", (req,res) => {
   let tempId = generateRandString();
   if (req.body.email === "" || req.body.password === "" || findUser(req.body.email, users)) {
-    res.send(400);
+    let templateVars = {user: users[req.session.user_id], urls: allowed, content: "email and passwords cannot be empty"};
+    res.render("alert", templateVars);
   } else {
     users[tempId] = {
       id: tempId,
@@ -104,7 +110,8 @@ app.post("/registration/register", (req,res) => {
 });
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL] === undefined) {
-    res.send(400);
+    let templateVars = {user: users[req.session.user_id], urls: allowed, content: "Nonexistent short Link"};
+    res.render("alert", templateVars);
   } else {
     let longURL = urlDatabase[req.params.shortURL].longURL;
     res.redirect(longURL);
@@ -130,7 +137,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
@@ -144,7 +151,7 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   let allowed = urlsForUser(req.session.user_id);
 
-  let templateVars = {user: users[req.session.user_id], urls: allowed };
+  let templateVars = {user: users[req.session.user_id], urls: allowed, content: "Please Log in"};
   if (!logged) {
     res.render("alert", templateVars);
   } else {
